@@ -1,4 +1,4 @@
-# ensembleKQC
+# EnsembleKQC
 An Unsupervised Ensemble Learning Method for Quality Control of Single Cell RNA-seq Sequencing Data
 
 ## Requirements
