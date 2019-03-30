@@ -28,12 +28,6 @@ def parse_args():
         sys.exit(1)
 
     args = parser.parse_args()
-    #print("")
-    #for arg in vars(args):
-    #    print("{}={}".format(arg.upper(), getattr(args, arg)))
-    #print("")
-
     return args
-
 
 FLAGS = parse_args()

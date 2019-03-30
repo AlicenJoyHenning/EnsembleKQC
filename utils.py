@@ -1,5 +1,3 @@
-import pandas as pd
-
 def calc_pre_recall_F1(pred, truth):
     precision = 0
     recall = 0
@@ -47,4 +45,3 @@ def load_features(file_name):
         for i, val in enumerate(l.strip().split(',')[1:]):
             mat[i].append(float(val))
     return mat
-

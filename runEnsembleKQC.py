@@ -85,8 +85,3 @@ if __name__ == '__main__':
     end = time.time()
     print('Done. Total time: {:2f}s. Results have been stored in {}'.format(end
         - start, result_path))
-
-
-
-
-
