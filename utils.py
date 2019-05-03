@@ -1,3 +1,4 @@
+import pandas as pd
 def calc_pre_recall_F1(pred, truth):
     precision = 0
     recall = 0
@@ -17,31 +18,24 @@ def calc_pre_recall_F1(pred, truth):
     return precision, recall, F1
 
 def load_features_and_labels(file_name):
-    with open(file_name, "r") as f:
-        lines = f.readlines()
-    lines = lines[1:]
-    col = len(list(lines[0].split(','))) - 1
-    label = []
-    mat = []
-    for i in range(col - 1):
-        mat.append([])
-    for l in lines:
-        for i, val in enumerate(l.strip().split(',')[1:]):
-            if i == col - 1:
-                label.append(int(val))
-            else:
-                mat[i].append(float(val))
-    return mat, label
+    csv = pd.read_csv(file_name, index_col=0)
+    # If the csv file has a column named Quality, we use that column as labels
+    # Otherwise the last column will be used as labels by default
+    if 'Quality' in csv.columns:
+        label = list(map(int, csv['Quality'].tolist()))    
+        csv.drop('Quality', axis=1, inplace=True)
+    else:
+        label = list(map(int, csv.iloc[:, -1].tolist()))
+        csv.drop(csv.columns[len(csv.columns)-1], axis=1, inplace=True)
+    feature_matrix = csv.T.values.tolist()
+    return feature_matrix, label
 
 def load_features(file_name):
-    with open(file_name, "r") as f:
-        lines = f.readlines()
-    lines = lines[1:]
-    col = len(list(lines[0].split(','))) - 1
-    mat = []
-    for i in range(col):
-        mat.append([])
-    for l in lines:
-        for i, val in enumerate(l.strip().split(',')[1:]):
-            mat[i].append(float(val))
-    return mat
+    csv = pd.read_csv(file_name, index_col=0)
+    feature_matrix = csv.T.values.tolist()
+    return feature_matrix
+
+if __name__ == '__main__':
+    mat = load_features("./example_data/Kolodziejczyk.csv")
+    mat, label = load_features_and_labels(
+            "./example_data/labeled_Kolodziejczyk.csv")
