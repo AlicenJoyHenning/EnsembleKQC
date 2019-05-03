@@ -13,9 +13,10 @@ Download all files and run following command to display help message
 $ python runEnsembleKQC.py --help
 ```
 ```
-usage: runEnsembleKQC.py [-h] [--input_path INPUT_PATH] [--lower_bound LOWER_BOUND]
-                    [--upper_bound UPPER_BOUND] [--labeld LABELD]
-                    [--output_path OUTPUT_PATH]
+usage: runEnsembleKQC.py [-h] [--input_path INPUT_PATH]
+                         [--lower_bound LOWER_BOUND]
+                         [--upper_bound UPPER_BOUND] [--labeled LABELED]
+                         [--output_path OUTPUT_PATH]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -25,7 +26,7 @@ optional arguments:
                         lower bound of estimated low-quality cell number
   --upper_bound UPPER_BOUND
                         upper bound of estimated low-quality cell number
-  --labeld LABELD       whether the data has quality labels. If true,
+  --labeled LABELED     whether the data has quality labels. If true,
                         evaluation information will be printed.
   --output_path OUTPUT_PATH
                         path of output data

@@ -23,7 +23,7 @@ def parse_args():
     parser.add_argument("--output_path", default="./result.csv",
                         type=str, help="path of output data")
 
-    if len(sys.argv) == 0:
+    if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(1)
 
