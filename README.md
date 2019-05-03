@@ -32,7 +32,7 @@ optional arguments:
 ```
 ## Example
 ```bash
-$ python runEnsembleKQC.py --input_path ./example_data/Kolodziejczyk.csv --lower_bound 96 --upper_bound 192 --labeled False --output_path ./result.csv
+$ python -u runEnsembleKQC.py --input_path ./example_data/Kolodziejczyk.csv --lower_bound 96 --upper_bound 192 --labeled False --output_path ./result.csv
 
-$ python runEnsembleKQC.py --input_path ./example_data/labeled_Kolodziejczyk.csv --lower_bound 96 --upper_bound 192 --labeled True --output_path ./result.csv
+$ python -u runEnsembleKQC.py --input_path ./example_data/labeled_Kolodziejczyk.csv --lower_bound 96 --upper_bound 192 --labeled True --output_path ./result.csv
 ```
