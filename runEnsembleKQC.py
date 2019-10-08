@@ -3,6 +3,7 @@ import itertools
 import time
 import numpy as np
 from sklearn.cluster import KMeans
+from sklearn.ensemble import IsolationForest
 from sklearn.metrics.pairwise import cosine_similarity
 from utils import *
 from configure import FLAGS
@@ -29,7 +30,6 @@ def calc_score(label):
             if label[x] and label[y]:
                 cnt += 1
                 score += similarity[x][y]
-
     if cnt:
         score /= cnt
     return score
@@ -55,7 +55,6 @@ if __name__ == '__main__':
     for arg in vars(FLAGS):
         print("{}={}".format(arg.upper(), getattr(FLAGS, arg)))
     print("")
-    print('range=[{},{}]'.format(lower_bound, upper_bound))
     if labeled:
         low_quality_cnt = cell_num - sum(label)
         print("total={}, low-quality={}, high-quality={}".format(cell_num, low_quality_cnt,
@@ -63,9 +62,27 @@ if __name__ == '__main__':
     print("{} features, {} cells".format(feature_num, cell_num))
 
     start = time.time()
-    # Get thresholds candidate list
     sorted_feature_values = [sorted(col) for col in mat]
-    threshold_candidate_lists = [col[lower_bound - 1 : upper_bound: 25] for col in sorted_feature_values]
+    # Estimate range of low-quality cells
+    if not lower_bound and not upper_bound:
+        lower_bound = cell_num
+        upper_bound = 0
+        for col in sorted_feature_values:
+            clf = IsolationForest(behaviour='new', contamination='auto', 
+                                random_state=0)
+            values = [[col[i]] for i in range(cell_num)]
+            clf.fit(values)
+            y_pred = clf.predict(values)
+            num = sum([1 if y != 1 else 0 for y in y_pred])
+            if num > cell_num / 2:
+                continue
+            lower_bound = min(lower_bound, num)
+            upper_bound = max(upper_bound, num)
+    print('range=[{},{}]'.format(lower_bound, upper_bound))
+
+    # Get thresholds candidate list
+    step = int((upper_bound - lower_bound + 1) * 0.2)
+    threshold_candidate_lists = [col[lower_bound - 1 : upper_bound: step] for col in sorted_feature_values]
 
     p = Pool()
     enumeration_list = list(itertools.product(*threshold_candidate_lists))
@@ -79,9 +96,10 @@ if __name__ == '__main__':
         print('precision {:2f} recall {:2f} F1Score {:2f}'.format(precision, recall, F1))
 
     # Store the result to the output path
-    with open(result_path, 'w') as f:
-        f.write('Quality\n')
-        f.writelines('\n'.join(map(str, result)))
+    if result_path:
+        with open(result_path, 'w') as f:
+            f.write('Quality\n')
+            f.writelines('\n'.join(map(str, result)))
     end = time.time()
     print('Done. Total time: {:2f}s. Results have been stored in {}'.format(end
         - start, result_path))
