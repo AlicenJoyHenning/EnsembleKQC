@@ -35,6 +35,21 @@ def load_features(file_name):
     feature_matrix = csv.T.values.tolist()
     return feature_matrix
 
+# mat is a n*m matrix, perform min-max scale for each row
+def min_max_scale(mat):
+    n = len(mat)
+    m = len(mat[0])
+    mins = [min(row) for row in mat]
+    maxs = [max(row) for row in mat]
+    for i in range(n):
+        if mins[i] == maxs[i]:
+            mat[i] = [1] * m
+        else:
+            for j in range(m):
+                mat[i][j] -= mins[i];
+                mat[i][j] /= maxs[i] - mins[i];
+    return mat
+
 if __name__ == '__main__':
     mat = load_features("./example_data/Kolodziejczyk.csv")
     mat, label = load_features_and_labels(

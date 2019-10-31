@@ -17,10 +17,11 @@ if labeled:
     mat, label = load_features_and_labels(file_name)
 else:
     mat = load_features(file_name)
-tmat = list(zip(*mat))
-similarity = cosine_similarity(tmat)
 feature_num = len(mat)
 cell_num = len(mat[0])
+mat = min_max_scale(mat)
+tmat = list(zip(*mat))
+similarity = cosine_similarity(tmat)
 
 def calc_score(label):
     cnt = 0
