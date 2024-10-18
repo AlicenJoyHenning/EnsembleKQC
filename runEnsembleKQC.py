@@ -2,6 +2,7 @@ from multiprocessing import Pool
 import itertools
 import time
 import numpy as np
+import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.ensemble import IsolationForest
 from sklearn.metrics.pairwise import cosine_similarity
@@ -72,6 +73,10 @@ if __name__ == '__main__':
     cell_num = len(mat[0])
     print("{} features, {} cells".format(feature_num, cell_num))
 
+    # Create a new DataFrame with the 'Identifier' column
+    identifiers = pd.read_csv(file_name, usecols=['Identifier'])
+    result_df = identifiers.copy()
+
     mat = min_max_scale(mat)
     tmat = np.array(list(zip(*mat)))
     similarity = cosine_similarity(tmat)
@@ -103,7 +108,7 @@ if __name__ == '__main__':
     print(f"Total enumeration rounds: {total_rounds}")
 
     # Limit the number of enumeration rounds to 5
-    enumeration_list = enumeration_list[:10]
+    enumeration_list = enumeration_list[:5]
 
     def progress_wrapper(args):
         result = run_enumeration_round_wrapper(args)
@@ -121,10 +126,11 @@ if __name__ == '__main__':
         precision, recall, F1 = calc_pre_recall_F1(result, label)
         print('precision {:2f} recall {:2f} F1Score {:2f}'.format(precision, recall, F1))
 
+    # Add the results as a new column to the DataFrame
+    result_df['Quality'] = ['cell' if res == 1 else 'damaged' for res in result]
+
     # Store the result to the output path
     if result_path:
-        with open(result_path, 'w') as f:
-            f.write('Quality\n')
-            f.writelines('\n'.join(map(str, result)))
+        result_df.to_csv(result_path, index=False, header=False)
     end = time.time()
     print('Done. Total time: {:2f}s. Results have been stored in {}'.format(end - start, result_path))
