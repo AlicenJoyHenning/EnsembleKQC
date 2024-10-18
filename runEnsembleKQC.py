@@ -11,7 +11,7 @@ from configure import FLAGS
 file_name = FLAGS.input_path
 lower_bound = FLAGS.lower_bound
 upper_bound = FLAGS.upper_bound
-result_path = FLAGS.output_path
+result_path = FLAGS.output_path 
 labeled = FLAGS.labeled
 if labeled:
     mat, label = load_features_and_labels(file_name)
