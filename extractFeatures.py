@@ -1,16 +1,23 @@
 import sys
 import pandas as pd
+import argparse
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Extract features from expression matrix.")
+    parser.add_argument("file_name", type=str, help="Path to the expression matrix CSV file.")
+    parser.add_argument("out_file_name", type=str, help="Path to the output file where the extracted features will be saved.")
+    parser.add_argument("organism", type=str, choices=["human", "mouse"], help="Organism type: 'human' or 'mouse'.")
+    parser.add_argument("--normalize", type=lambda x: (str(x).lower() == 'true'), default=True, help="Whether to normalize the data (default: True).")
+    return parser.parse_args()
 
 if __name__ == '__main__':
-    if len(sys.argv) < 4 or len(sys.argv) > 5:
-        print("Usage: python extractFeatures.py <your_expression_matrix_csv> <output_filename> <organism> [normalize]")
-        sys.exit()
-    else:
-        file_name = sys.argv[1]
-        out_file_name = sys.argv[2]
-        organism = sys.argv[3].lower()
-        normalize = True if len(sys.argv) == 4 else sys.argv[4].lower() == 'true'
-        print('Extracting features from', file_name, 'for organism', organism, 'with normalization', normalize)
+    args = parse_args()
+    file_name = args.file_name
+    out_file_name = args.out_file_name
+    organism = args.organism.lower()
+    normalize = args.normalize
+
+    print('Extracting features from', file_name, 'for organism', organism, 'with normalization', normalize)
 
 
     df = pd.read_csv(file_name, index_col = 0)
@@ -48,5 +55,7 @@ if __name__ == '__main__':
             },
             index = df.columns
     )
+
+    # Return output csv to specified location
     features.to_csv(out_file_name, columns = ["Actb", "Gapdh", "Metabolic process", "#Detected Genes"])
     print("Stored results in", out_file_name)

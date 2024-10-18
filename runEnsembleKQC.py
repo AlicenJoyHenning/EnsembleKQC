@@ -6,22 +6,42 @@ from sklearn.cluster import KMeans
 from sklearn.ensemble import IsolationForest
 from sklearn.metrics.pairwise import cosine_similarity
 from utils import *
-from configure import FLAGS
+import argparse
 
-file_name = FLAGS.input_path
-lower_bound = FLAGS.lower_bound
-upper_bound = FLAGS.upper_bound
-result_path = FLAGS.output_path 
-labeled = FLAGS.labeled
-if labeled:
-    mat, label = load_features_and_labels(file_name)
-else:
-    mat = load_features(file_name)
-feature_num = len(mat)
-cell_num = len(mat[0])
-mat = min_max_scale(mat)
-tmat = list(zip(*mat))
-similarity = cosine_similarity(tmat)
+def parse_args():
+    parser = argparse.ArgumentParser(description="Run Ensemble KQC.")
+    parser.add_argument("--input_path", type=str, required=True, help="Path to the input data.")
+    parser.add_argument("--lower_bound", type=int, default=None, help="Lower bound of estimated low-quality cell number.")
+    parser.add_argument("--upper_bound", type=int, default=None, help="Upper bound of estimated low-quality cell number.")
+    parser.add_argument("--output_path", type=str, default=None, help="Path to the output data.")
+    parser.add_argument("--labeled", type=lambda x: (str(x).lower() == 'true'), default=True, help="Whether the data has quality labels. If true, evaluation information will be printed.")
+    return parser.parse_args()
+
+if __name__ == '__main__':
+    args = parse_args()
+    file_name = args.input_path
+    lower_bound = args.lower_bound
+    upper_bound = args.upper_bound
+    result_path = args.output_path
+    labeled = args.labeled
+
+    print("")
+    for arg in vars(args):
+        print("{}={}".format(arg.upper(), getattr(args, arg)))
+    print("")
+    if labeled:
+        mat, label = load_features_and_labels(file_name)
+        low_quality_cnt = len(label) - sum(label)
+        print("total={}, low-quality={}, high-quality={}".format(len(label), low_quality_cnt, len(label) - low_quality_cnt))
+    else:
+        mat = load_features(file_name)
+    feature_num = len(mat)
+    cell_num = len(mat[0])
+    print("{} features, {} cells".format(feature_num, cell_num))
+
+    mat = min_max_scale(mat)
+    tmat = list(zip(*mat))
+    similarity = cosine_similarity(tmat)
 
 def calc_score(label):
     cnt = 0
