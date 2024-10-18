@@ -2,10 +2,14 @@
 An Unsupervised Ensemble Learning Method for Quality Control of Single Cell RNA-seq Sequencing Data
 
 ## Requirements
-* Python 3
-* Scikit-learn
-* Numpy
-* Pandas
+- **Python 3**: The base language.
+- **Scikit-learn**: For machine learning algorithms.
+- **Numpy**: For numerical operations.
+- **Pandas**: For data manipulation and analysis.
+- **multiprocessing**: For parallel processing (standard library).
+- **argparse**: For parsing command-line arguments (standard library).
+- **itertools**: For creating iterators for efficient looping (standard library).
+- **time**: For measuring execution time (standard library).
 
 ## Preprocessing
 EnsembleKQC uses the following five features to detect low-quality cells:
