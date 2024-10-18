@@ -19,8 +19,7 @@ if __name__ == '__main__':
 
     print('Extracting features from', file_name, 'for organism', organism, 'with normalization', normalize)
 
-
-    df = pd.read_csv(file_name, index_col = 0)
+    df = pd.read_csv(file_name, index_col=0)
     df = df.fillna(0)
 
     # Normalization if specified
@@ -29,12 +28,12 @@ if __name__ == '__main__':
 
     # Retrieve organism-specific features
     if organism == 'mouse':
-        Actb = df.loc['Actb', :]
-        Gapdh = df.loc['Gapdh', :]
+        Actb = df.loc['Actb', :] if 'Actb' in df.index else pd.Series([0]*df.shape[1], index=df.columns)
+        Gapdh = df.loc['Gapdh', :] if 'Gapdh' in df.index else pd.Series([0]*df.shape[1], index=df.columns)
         metabolic_genes_file = "./gene_names/mouse_metabolic_process_genes.txt"
     elif organism == 'human':
-        Actb = df.loc['ACTB', :]
-        Gapdh = df.loc['GAPDH', :]
+        Actb = df.loc['ACTB', :] if 'ACTB' in df.index else pd.Series([0]*df.shape[1], index=df.columns)
+        Gapdh = df.loc['GAPDH', :] if 'GAPDH' in df.index else pd.Series([0]*df.shape[1], index=df.columns)
         metabolic_genes_file = "./gene_names/human_metabolic_process_genes.txt"
     else:
         print("Invalid organism. Please specify 'human' or 'mouse'.")
@@ -42,20 +41,31 @@ if __name__ == '__main__':
 
     with open(metabolic_genes_file, "r") as f:
         metabolic_genes = [line.strip() for line in f.readlines()]
-    Metabolic_process = df.loc[metabolic_genes, :].apply(sum, axis = 0)
-   
+
+    # Filter metabolic genes to only those present in the DataFrame
+    present_metabolic_genes = [gene for gene in metabolic_genes if gene in df.index]
+
+    if not present_metabolic_genes:
+        print("Warning: None of the metabolic genes are present in the data.")
+        Metabolic_process = pd.Series([0]*df.shape[1], index=df.columns)
+    else:
+        Metabolic_process = df.loc[present_metabolic_genes, :].apply(sum, axis=0)
+
     # Extract the number of detected genes
-    Detected_gene_num = df.apply(lambda col: sum(col>0), axis = 0)
+    Detected_gene_num = df.apply(lambda col: sum(col > 0), axis=0)
     features = pd.DataFrame(
-        data = {
-                'Actb': Actb,
-                'Gapdh': Gapdh,
-                'Metabolic process': Metabolic_process,
-                '#Detected Genes': Detected_gene_num
-            },
-            index = df.columns
+        data={
+            'Actb': Actb,
+            'Gapdh': Gapdh,
+            'Metabolic process': Metabolic_process,
+            '#Detected Genes': Detected_gene_num
+        },
+        index=df.columns
     )
 
+    # Add 'Identifier' column name to the index
+    features.index.name = 'Identifier'
+
     # Return output csv to specified location
-    features.to_csv(out_file_name, columns = ["Actb", "Gapdh", "Metabolic process", "#Detected Genes"])
+    features.to_csv(out_file_name, columns=["Actb", "Gapdh", "Metabolic process", "#Detected Genes"])
     print("Stored results in", out_file_name)
