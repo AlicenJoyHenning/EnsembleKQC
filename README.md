@@ -55,9 +55,10 @@ optional arguments:
                         path of output data
 ```
 ## Example
-To test ```EnsembleKQC``` installation two examples have been provided within this repository.
+To test ```EnsembleKQC``` installation, two examples have been provided within this repository.
 
 <br>
+
 The first example uses a count matrix (CSV) as input, runs the [extractFeatures](https://github.com/AlicenJoyHenning/EnsembleKQC/blob/master/extractFeatures.py)
 
 ```bash
@@ -72,18 +73,18 @@ python extractFeatures.py ./example_data/matrix_data.csv ./outputs/matrix_extrac
  python ./runEnsembleKQC.py --input_path=./outputs/matrix_extractedFeatures.csv --labeled=false --output_path=./outputs/matrix_results.csv
 # Check that this output is identical to that in ./example_data/matrix_results.csv
 ```
+
 <br>
+
 The output format of runEnsembleKQC.py is a csv with cell identifiers and damaged cell labels that can be used to filter your sample. 
->
-> GGCTCGACATCTACGA,damaged
-> GCGACCAAGAATCTCC,cell
+> GGCTCGACATCTACGA,damaged <br>
+> GCGACCAAGAATCTCC,cell <br>
 > GGAATAATCTTAACCT,cell
->
 
 <br>
 <br>
 
-Another example is provided where pre-calculated features are used as input for runEnsembleKQC where damaged labels are included.
+Another example is provided where pre-calculated features are used as input for runEnsembleKQC and damaged labels are included.
 ```bash
 # Using input csv
  python ./runEnsembleKQC.py --input_path=./example_data/labeled_Kolodziejczyk.csv --labeled=true --output_path=./outputs/Kolodziejczyk_results.csv
